@@ -21,9 +21,12 @@ logger = logging.getLogger(__name__)
 # ---------------------------
 app = FastAPI()
 
-# Load Retriever & Reranker once at startup
+# Load Retriever only (lightweight)
 retriever = load_vector_store()
-reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
+# Lazy reranker loader
+def get_reranker():
+    return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
 
 
 # ---------------------------
@@ -68,7 +71,9 @@ def query_rag(request: QueryRequest):
 
     logger.info(f"Initial retrieved chunks: {len(docs)}")
 
-    # 2️⃣ Reranking
+    # 2️⃣ Load Reranker only when needed
+    reranker = get_reranker()
+
     pairs = [(request.question, doc.page_content) for doc in docs]
     scores = reranker.predict(pairs)
 
