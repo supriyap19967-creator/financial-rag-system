@@ -3,7 +3,7 @@ from app.ingestion import process_pdf
 from app.Vector import create_Vector
 import os
 
-file_path = r"C:\Users\supri\Desktop\Financial Rag API\Data\Finance_RBI.pdf"  
+file_path = "Data/Finance_RBI.pdf" 
 if not os.path.exists(file_path):
     print(f"ERROR: File not found at {file_path}. Please check your Data folder.")
 

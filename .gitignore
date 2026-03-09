@@ -1,5 +1,2 @@
-.env
-__pycache__/
-*.pyc
-data/Vector/
-*.faiss
+#data/Vector/
+#*.faiss

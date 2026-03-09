@@ -1,32 +1,28 @@
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import os
+from langchain_community.vectorstores import FAISS
+from langchain_huggingface import HuggingFaceEmbeddings
 
-def process_pdf(file_path: str):
-    # Load PDF
+
+def process_pdf(file_path):
+
     loader = PyPDFLoader(file_path)
     documents = loader.load()
 
-    # Chunking strategy
-    #We use a smaller overlap but ensure we keep headers together
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=700,
-        chunk_overlap=120,
-	add_start_index=True  # tracks position in doc
+        chunk_size=1000,
+        chunk_overlap=200
     )
 
     chunks = text_splitter.split_documents(documents)
 
-# Metadata
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
-    file_name = os.path.basename(file_path)
-    for chunk in chunks:
-        chunk.metadata["source"]=file_name
+    vectorstore = FAISS.from_documents(chunks, embeddings)
+
+    # SAVE VECTOR DB
+    vectorstore.save_local("Data/Vector")
+
     return chunks
-	      
-if __name__ == "__main__":
-    path = r"C:\Users\supri\Desktop\Financial Rag API\Data\Finance_RBI.pdf"
-    print("Starting ingestion...")
-    result = process_pdf(path)
-    print(f"Success! Created {len(result)} chunks.") 
-  
