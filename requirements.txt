@@ -12,6 +12,7 @@ langchain-classic
 
 faiss-cpu
 sentence-transformers
+rank_bm25
 
 --extra-index-url https://download.pytorch.org/whl/cpu
 torch==2.4.0
