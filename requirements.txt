@@ -1,12 +1,16 @@
 fastapi
-uvicorn[standard]
+uvicorn
 pydantic
-sentence-transformers
-langchain
-langchain-core
-langchain-community
-langchain-huggingface
-faiss-cpu
 python-dotenv
 requests
 colorama
+
+langchain
+langchain-community
+langchain-huggingface
+
+faiss-cpu
+sentence-transformers
+
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.2.2
