@@ -1,70 +1,32 @@
 import streamlit as st
 import requests
 
-API_URL = "http://127.0.0.1:8000/query"
+API_URL = "https://rag-api-912628415543.us-central1.run.app"
 
-st.set_page_config(
-    page_title="Financial Regulatory RAG",
-    layout="wide"
-)
+st.title("Financial Regulation RAG Assistant")
 
-st.title("📊 Financial Regulatory Compliance RAG")
-st.caption("Hybrid Retrieval (BM25 + FAISS) + CrossEncoder Reranking + Self-RAG Validation")
+question = st.text_input("Ask a question about financial regulations:")
 
-st.markdown("---")
+if st.button("Submit"):
 
-question = st.text_input("🔎 Ask a compliance-related question")
-
-col1, col2 = st.columns([1, 6])
-
-with col1:
-    submit = st.button("Submit")
-
-if submit and question:
-
-    with st.spinner("Retrieving and validating answer..."):
+    if not question.strip():
+        st.warning("Please enter a question.")
+    else:
         try:
-            response = requests.post(API_URL, json={"question": question})
-            data = response.json()
-        except:
-            st.error("⚠ Backend API not running. Please start FastAPI server.")
-            st.stop()
-
-    st.markdown("---")
-
-    # ✅ Answer Section
-    st.subheader("📌 Answer")
-
-    if "insufficient" in data["answer"].lower():
-        st.error(data["answer"])
-    else:
-        st.success(data["answer"])
-
-    st.markdown("---")
-
-    # 📄 Sources Section
-    st.subheader("📄 Sources")
-
-    if data["sources"]:
-        for source in data["sources"]:
-            st.markdown(
-                f"- **{source['source']}** | Page: {source['page']} | Chunk: {source['chunk_id']}"
+            response = requests.post(
+                f"{API_URL}/query",
+                json={"question": question},
+                timeout=60
             )
-    else:
-        st.write("No supporting sources found.")
 
-    st.markdown("---")
+            if response.status_code == 200:
+                data = response.json()
+                st.success(data.get("answer", "No answer returned"))
 
-    # ⚙ Metadata Section
-    st.subheader("⚙ Retrieval Metadata")
+            else:
+                st.error(f"API Error: {response.status_code}")
+                st.text(response.text)
 
-    colA, colB = st.columns(2)
-
-    with colA:
-        st.metric("Retrieved Chunks", data["retrieved_chunks"])
-
-    with colB:
-        st.metric("Latency (seconds)", data["latency_seconds"])
-
-st.markdown("---")
-st.caption("Built using FastAPI, FAISS, SentenceTransformers, and Streamlit.")
+        except Exception as e:
+            st.error("⚠ Backend API not reachable.")
+            st.text(str(e))

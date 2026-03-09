@@ -1,12 +1,13 @@
 fastapi
-uvicorn[standard]
+uvicorn
 pydantic
 sentence-transformers
 langchain
-langchain-core
 langchain-community
 langchain-huggingface
 faiss-cpu
 python-dotenv
 requests
 colorama
+ollama
+streamlit

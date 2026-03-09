@@ -1,0 +1,46 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  annotations:
+    run.googleapis.com/build-enable-automatic-updates: 'false'
+    run.googleapis.com/build-id: 715cdccf-109f-46c3-a34d-bf6822813dc7
+    run.googleapis.com/build-image-uri: us-central1-docker.pkg.dev/project-ad23f18a-9e1a-43eb-84b/cloud-run-source-deploy/rag-api
+    run.googleapis.com/build-name: projects/912628415543/locations/us-central1/builds/715cdccf-109f-46c3-a34d-bf6822813dc7
+    run.googleapis.com/build-source-location: gs://run-sources-project-ad23f18a-9e1a-43eb-84b-us-central1/services/rag-api/1772916441.781038-dccf3696021f4bfd92ba42688395e3da.zip#1772916461407303
+    run.googleapis.com/ingress: all
+    run.googleapis.com/ingress-status: all
+    run.googleapis.com/maxScale: '20'
+    run.googleapis.com/urls: '["https://rag-api-912628415543.us-central1.run.app"]'
+  labels:
+    cloud.googleapis.com/location: us-central1
+  name: rag-api
+  namespace: '912628415543'
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/maxScale: '20'
+        run.googleapis.com/client-name: gcloud
+        run.googleapis.com/client-version: 557.0.0
+        run.googleapis.com/startup-cpu-boost: 'true'
+      labels:
+        client.knative.dev/nonce: msybvmqgme
+        run.googleapis.com/startupProbeType: Custom
+    spec:
+      containerConcurrency: 80
+      containers:
+      - image: us-central1-docker.pkg.dev/project-ad23f18a-9e1a-43eb-84b/rag-repo/rag-api
+        ports:
+        - containerPort: 8080
+          name: http1
+        resources:
+          limits:
+            cpu: '2'
+            memory: 4G
+          periodSeconds: 10
+          timeoutSeconds: 5
+      serviceAccountName: 912628415543-compute@developer.gserviceaccount.com
+      timeoutSeconds: 600
+  traffic:
+  - latestRevision: true
+    percent: 100
